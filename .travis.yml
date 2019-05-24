@@ -11,10 +11,11 @@ matrix:
 
 install:
   - haxelib dev json5mod $(pwd)
-#  - haxelib install hamcrest - v.2,0,1 have bug
-#  - haxelib install munit
-  - haxelib git hamcrest https://github.com/mikestead/hamcrest-haxe.git
-  - haxelib git munit https://github.com/massiveinteractive/MassiveUnit.git
+#NOTE:v.2,0,1 have bug
+  - haxelib install hamcrest
+  - haxelib install munit
+#  - haxelib git hamcrest https://github.com/mikestead/hamcrest-haxe.git
+#  - haxelib git munit https://github.com/massiveinteractive/MassiveUnit.git
   - haxelib install hxcpp
   - haxelib install hxjava
 #  - haxelib install hxnodejs
