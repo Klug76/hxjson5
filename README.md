@@ -23,6 +23,7 @@ import gs.json5mod.Json5;
 var y = Json5.parse("{}");
 ```
 The demo folder contains an example for openfl with simple live reload support.
+![demo](https://github.com/Klug76/hxjson5/blob/master/demo/demo.gif?raw=true)
 
 # Links:
 
