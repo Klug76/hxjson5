@@ -1,0 +1,21 @@
+language: haxe
+
+haxe:
+  - 3.4.7
+  - stable
+  - development
+
+matrix:
+  allow_failures:
+    - haxe: development
+
+install:
+  - haxelib install munit
+  - haxelib install hamcrest
+#  - haxelib install hxcpp
+
+script:
+  - cd $TRAVIS_BUILD_DIR/test
+  - haxelib run munit test -js
+#  - haxelib run munit test -cpp
+#  - haxelib run munit test -java
