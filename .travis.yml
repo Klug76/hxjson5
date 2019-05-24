@@ -12,14 +12,16 @@ matrix:
 install:
   - haxelib dev json5mod $(pwd)
   - haxelib install munit
-  - haxelib install hamcrest
+#  - haxelib install hamcrest - v.2,0,1 have bug
+  - haxelib git hamcrest https://github.com/mikestead/hamcrest-haxe.git
   - haxelib install hxcpp
   - haxelib install hxjava
+#  - haxelib install hxnodejs
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/test
 
 script:
-#  - haxelib run munit test -js
-  - haxelib run munit test -cpp
+  - haxelib run munit test -js -browser phantomjs
   - haxelib run munit test -java
+  - haxelib run munit test -cpp
