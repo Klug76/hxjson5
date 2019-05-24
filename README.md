@@ -22,7 +22,7 @@ It implements the JSON5 parser with some extensions from HJSON:
 import gs.json5mod.Json5;
 var y = Json5.parse("{}");
 ```
-The demo catalog contains an example for openfl with live reload support.
+The demo folder contains an example for openfl with simple live reload support.
 
 # Links:
 
