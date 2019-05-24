@@ -1,0 +1,16 @@
+{
+  "a": "",
+  "b": "First line.\nSecond line`.\n  This line is indented by two spaces.",
+  "c": "12",
+  "d": "1\n2",
+  "e": "1\r\n2",
+  "f": "1\r2",
+  "g": [
+    "1",
+    "1\n2",
+    "3\n4",
+    "",
+    "",
+    "\n\t"
+  ]
+}

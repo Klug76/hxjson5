@@ -1,0 +1,38 @@
+{
+	// comment
+	# hash style comment
+	/*
+	block style
+	comment
+	*/
+
+	singleQuotes: 'I can use "double quotes" here'
+
+	lineBreaks: "Look, Mom! \
+No \\n's!"
+
+	multilineString:
+	```
+	First line.
+	Second line.
+	  This line is indented by two spaces.
+	```
+
+	hexadecimal: 0xdecaf,
+
+	leadingDecimalPoint: .8675309, andTrailing: 8675309.
+
+	positiveSign: +1
+
+	intRange: 1..10
+
+	trailingComma: {in: 'objects',}, andIn: ['arrays',],
+
+	noComma: [1 2 3 4]
+
+	"backwardsCompatible": "with JSON"
+}
+/*
+another block style
+comment
+*/

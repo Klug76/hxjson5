@@ -1,0 +1,7 @@
+{
+  // invalid name
+  ```
+  foo
+  ```
+  : 0
+}

@@ -1,0 +1,106 @@
+## Flash 11+
+--next
+
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib json5mod
+-cp src
+-cp test
+-D haxeJSON
+
+-swf-version 11
+-swf build/as3_test.swf
+
+## JavaScript
+--next
+
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib json5mod
+-cp src
+-cp test
+-D haxeJSON
+
+-js build/js_test.js
+
+## Neko
+--next
+
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib json5mod
+-cp src
+-cp test
+-D haxeJSON
+
+-neko build/neko_test.n
+
+## CPP
+--next
+
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib json5mod
+-cp src
+-cp test
+-D haxeJSON
+#-D HXCPP_M64
+
+-cpp build/cpp_test
+
+## Java
+--next
+
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib json5mod
+-cp src
+-cp test
+-D haxeJSON
+
+-java build/java_test
+
+## CSharp
+--next
+
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib json5mod
+-cp src
+-cp test
+-D haxeJSON
+
+-cs build/cs_test
+
+## Python
+#--next
+#-python build/python_test.py
+
+## PHP 7
+#--next
+#-D php7
+#-php build/php_test
+
+## JavaScript NodeJS
+#--next
+#-lib hxnodejs
+#-js build/js_test.js
+
+## HashLink
+--next
+
+-main TestMain
+-lib munit
+-lib hamcrest
+-lib json5mod
+-cp src
+-cp test
+-D haxeJSON
+
+-hl build/hl_test.hl

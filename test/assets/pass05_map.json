@@ -1,0 +1,216 @@
+{
+    map: {
+        obj: [
+            {
+                item: [
+                    {
+                        m3d: "way_pt2"
+                    }
+                ],
+                name: "way_pt2"
+            },
+            {
+                item: [
+                    {
+                        m3d: "way_pt"
+                    }
+                ],
+                name: "way_pt"
+            }
+        ],
+        scene: [
+            {
+                obj: "way_pt",
+                move: {
+                    y: 650,
+                    z: -5,
+                    x: 500
+                },
+                tp_next2: -1,
+                tp: 0,
+                tp_next: 1
+            },
+            {
+                obj: "way_pt2",
+                move: {
+                    y: 650,
+                    z: 0,
+                    x: 575
+                }
+            },
+            {
+                obj: "way_pt",
+                move: {
+                    y: 650,
+                    z: -5,
+                    x: 650
+                },
+                tp_next2: 2,
+                tp: 1,
+                tp_next: 15
+            },
+            {
+                obj: "way_pt2",
+                move: {
+                    y: 725,
+                    z: 0,
+                    x: 650
+                }
+            },
+            {
+                obj: "way_pt2",
+                move: {
+                    y: 800,
+                    z: 0,
+                    x: 650
+                }
+            },
+            {
+                obj: "way_pt2",
+                move: {
+                    y: 875,
+                    z: 0,
+                    x: 650
+                }
+            },
+            {
+                obj: "way_pt2",
+                move: {
+                    y: 650,
+                    z: 0,
+                    x: 748.749988875
+                }
+            },
+            {
+                obj: "way_pt",
+                move: {
+                    y: 650,
+                    z: -5,
+                    x: 847.49997775
+                },
+                tp_next2: -1,
+                tp: 2,
+                tp_next: 3
+            },
+            {
+                obj: "way_pt2",
+                move: {
+                    y: 650,
+                    z: 0,
+                    x: 946.249966625
+                }
+            },
+            {
+                obj: "way_pt2",
+                move: {
+                    y: 6636.203954180914,
+                    z: 0,
+                    x: 8261.234514448824
+                }
+            },
+            {
+                obj: "way_pt",
+                move: {
+                    y: 8350,
+                    z: -5,
+                    x: 8510
+                },
+                tp_next2: -1,
+                tp: 693,
+                tp_next: -1
+            }
+        ],
+        light: {
+            dx: 50,
+            type: "direct",
+            dy: -100,
+            dz: 50
+        }
+    },
+    terra: {
+        bio_ptrn: [
+            {
+                bio_pattern: {
+                    biom: [
+                        {
+                            tag: "water",
+                            offroad: {
+                                ground: "sand_0"
+                            }
+                        },
+                        {
+                            offroad: {
+                                ground: "sand_1"
+                            }
+                        }
+                    ],
+                    name: "test"
+                }
+            },
+            {
+                bio_pattern: {
+                    biom: [
+                        {
+                            tag: "water",
+                            offroad: {
+                                ground: "grass_1"
+                            }
+                        },
+                        {
+                            offroad: {
+                                ground: "grass_2"
+                            }
+                        }
+                    ],
+                    name: "test2"
+                }
+            }
+        ],
+        mater: [
+            {
+                diff: {
+                    argb: "tile/tileset_sand00.png"
+                },
+                name: "sand_0"
+            },
+            {
+                blend: {
+                    mode: "alpha"
+                },
+                diff: {
+                    argb: "tile/tileset_sand01.png"
+                },
+                name: "sand_1"
+            },
+            {
+                blend: {
+                    mode: "alpha"
+                },
+                diff: {
+                    argb: "tile/tileset_grass01.png"
+                },
+                name: "grass_1"
+            },
+            {
+                blend: {
+                    mode: "alpha"
+                },
+                diff: {
+                    argb: "tile/tileset_grass02.png"
+                },
+                name: "grass_2"
+            }
+        ]
+    },
+    track_opt: {
+        density_adj_: 19,
+        start_div_deep_: 3,
+        snake_mode_rnd_: 1,
+        counter_div2_: 1,
+        counter_div3_: 1,
+        min_track_step_: 30,
+        z_factor_: 5,
+        min_snake_size_: 3,
+        point_count_: 250
+    }
+}

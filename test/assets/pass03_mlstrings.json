@@ -1,0 +1,24 @@
+﻿{	a:		```		```	b: ```First line.Second line`.  This line is indented by two spaces.```	c: "1\2"	d: "1\n2"
+	e: "1\r\n2"
+	f: "1\r2"
+	g: [
+		"1"
+		```
+		1
+		2
+		```
+		```
+		3
+		4
+		```
+		```
+		```
+		```
+		
+		```
+		```
+		
+			
+		```
+	]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "json5mod",
+  "license": "MIT",
+  "tags": ["json","json5","hjson","parser","cross"],
+  "description": "JSON5 (mod) parse/stringify.",
+  "classPath": "src",
+  "contributors": ["Klug76"],
+  "releasenote": "First alpha",
+  "version": "0.0.1",
+  "url": "https://github.com/Klug76/hxjson5",
+  "dependencies": {}
+}

@@ -1,0 +1,15 @@
+{
+	root:
+	{
+		name: "John Doe"
+		//name: "Neo"
+		//name: null
+		//name: ""
+		//uid: 12
+		//uid: null
+		uid: 1100101
+		//uid: 1.5
+		money: -100
+		//zzz
+	}
+}

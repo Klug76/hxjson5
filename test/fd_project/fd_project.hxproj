@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project version="2">
+  <!-- Output SWF options -->
+  <output>
+    <movie outputType="Application" />
+    <movie input="" />
+    <movie path="bin\fdproject.swf" />
+    <movie fps="30" />
+    <movie width="800" />
+    <movie height="600" />
+    <movie version="29" />
+    <movie minorVersion="0" />
+    <movie platform="AIR" />
+    <movie background="#707080" />
+    <movie preferredSDK="Haxe 4.0.0-rc.2;4.0.0-rc.2;" />
+  </output>
+  <!-- Other classes to be compiled into your SWF -->
+  <classpaths>
+    <class path="src" />
+    <class path="..\test" />
+  </classpaths>
+  <!-- Build options -->
+  <build>
+    <option directives="haxeJSON&#xA;flashdevelop" />
+    <option flashStrict="True" />
+    <option noInlineOnDebug="True" />
+    <option mainClass="Main" />
+    <option enabledebug="True" />
+    <option additional="" />
+  </build>
+  <!-- haxelib libraries -->
+  <haxelib>
+    <library name="air3" />
+    <library name="munit" />
+    <library name="hamcrest" />
+    <library name="json5mod" />
+  </haxelib>
+  <!-- Class files to compile (other referenced classes will automatically be included) -->
+  <compileTargets>
+    <compile path="src\Main.hx" />
+  </compileTargets>
+  <!-- Assets to embed into the output SWF -->
+  <library>
+    <!-- example: <asset path="..." id="..." update="..." glyphs="..." mode="..." place="..." sharepoint="..." /> -->
+  </library>
+  <!-- Paths to exclude from the Project Explorer tree -->
+  <hiddenPaths>
+    <hidden path="obj" />
+  </hiddenPaths>
+  <!-- Executed before build -->
+  <preBuildCommand />
+  <!-- Executed after build -->
+  <postBuildCommand alwaysRun="False" />
+  <!-- Other project options -->
+  <options>
+    <option showHiddenPaths="False" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="bat\RunApp.bat" />
+  </options>
+  <!-- Plugin storage -->
+  <storage />
+</project>
