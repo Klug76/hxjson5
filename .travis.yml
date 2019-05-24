@@ -10,12 +10,15 @@ matrix:
     - haxe: development
 
 install:
+  - haxelib dev json5mod $(pwd)
   - haxelib install munit
   - haxelib install hamcrest
 #  - haxelib install hxcpp
 
-script:
+before_script:
   - cd $TRAVIS_BUILD_DIR/test
+
+script:
   - haxelib run munit test -js
 #  - haxelib run munit test -cpp
 #  - haxelib run munit test -java
