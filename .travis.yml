@@ -13,12 +13,13 @@ install:
   - haxelib dev json5mod $(pwd)
   - haxelib install munit
   - haxelib install hamcrest
-#  - haxelib install hxcpp
+  - haxelib install hxcpp
+  - haxelib install hxjava
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/test
 
 script:
-  - haxelib run munit test -js
-#  - haxelib run munit test -cpp
-#  - haxelib run munit test -java
+#  - haxelib run munit test -js
+  - haxelib run munit test -cpp
+  - haxelib run munit test -java
