@@ -20,7 +20,7 @@ class Json5CompileTimeTest
 		//var b = Json5FileUtil.load_At_Compile_Time("../assets/fail21_dup.json");
 		//var b = Json5FileUtil.load_At_Compile_Time("../assets/fail22_badbegin.json");
 #else
-		var a = Json5FileUtil.load_At_Compile_Time("assets/pass01_complex.json");
+		var a = Json5FileUtil.load_At_Compile_Time("assets/pass04_compact.json");
 		//var b = Json5FileUtil.load_At_Compile_Time("assets/fail01_falsefalse.json");
 #end
 #end
