@@ -9,6 +9,9 @@ matrix:
   allow_failures:
     - haxe: development
 
+addons:
+  chrome: stable
+
 install:
   - haxelib dev json5mod $(pwd)
 #NOTE:hamcrest v.2,0,1 won't build with haxe: development
@@ -18,15 +21,18 @@ install:
 #  - haxelib git munit https://github.com/massiveinteractive/MassiveUnit.git
   - haxelib install hxcpp
   - haxelib install hxjava
-  - haxelib install hxcs
-  - haxelib install hxnodejs
+#  - haxelib install hxcs
+#  - haxelib install hxnodejs
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/test
 
 script:
 #  - haxelib run munit test -js -browser phantomjs
-  - haxelib run munit test -js
+  - haxelib run munit test -js -browser "google-chrome-stable --headless --no-sandbox" -kill-browser
   - haxelib run munit test -java
-  - haxelib run munit test -cs
   - haxelib run munit test -cpp
+
+cache:
+  directories:
+    - $HOME/haxe/lib
