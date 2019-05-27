@@ -25,11 +25,17 @@ install:
 #  - haxelib install hxnodejs
 
 before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
   - cd $TRAVIS_BUILD_DIR/test
+  - haxe -version
+  - node --version
 
 script:
 #  - haxelib run munit test -js -browser phantomjs
-  - haxelib run munit test -js -browser "google-chrome-stable --headless --no-sandbox" -kill-browser
+  - haxelib run munit test -js -browser "google-chrome-stable --headless --no-sandbox --disable-gpu" -kill-browser
+  - haxelib run munit test -neko
   - haxelib run munit test -java
   - haxelib run munit test -cpp
 
