@@ -34,10 +34,12 @@ before_script:
   - sleep 3 # give xvfb some time to start
   - cd $TRAVIS_BUILD_DIR/test
   - echo $(node --version)
+  - nvm install 10
+  - echo $(node --version)
 
 script:
 #  - haxelib run munit test -js -browser phantomjs
-  - haxelib run munit test -js -browser firefox -kill-browser
+  - haxelib run munit test -js -browser firefox -result-exit-code
 #  - haxelib run munit test -js -browser "google-chrome-stable --headless --no-sandbox --disable-gpu" -kill-browser
   - haxelib run munit test -neko
 #  - haxelib run munit test -java
