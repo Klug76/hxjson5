@@ -9,12 +9,12 @@ matrix:
   allow_failures:
     - haxe: development
 
-addons:
+#addons:
 #  chrome: stable
-  firefox: "latest"
+#  firefox: "latest"
 
-env:
-  - MOZ_HEADLESS=1
+#env:
+#  - MOZ_HEADLESS=1
 
 install:
   - haxelib dev json5mod $(pwd)
@@ -26,20 +26,21 @@ install:
   - haxelib install hxcpp
   - haxelib install hxjava
 #  - haxelib install hxcs
-#  - haxelib install hxnodejs
+  - haxelib install hxnodejs
 
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
+#  - "export DISPLAY=:99.0"
+#  - "sh -e /etc/init.d/xvfb start"
+#  - sleep 3 # give xvfb some time to start
   - cd $TRAVIS_BUILD_DIR/test
   - echo $(node --version)
   - nvm install 10
   - echo $(node --version)
 
 script:
+  - haxelib run munit test -js
 #  - haxelib run munit test -js -browser phantomjs
-  - haxelib run munit test -js -browser firefox -result-exit-code
+#  - haxelib run munit test -js -browser firefox -result-exit-code
 #  - haxelib run munit test -js -browser "google-chrome-stable --headless --no-sandbox --disable-gpu" -kill-browser
   - haxelib run munit test -neko
 #  - haxelib run munit test -java
