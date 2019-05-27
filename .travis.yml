@@ -3,7 +3,7 @@ language: haxe
 haxe:
   - 3.4.7
   - stable
-  - development
+#  - development
 
 matrix:
   allow_failures:
@@ -11,19 +11,22 @@ matrix:
 
 install:
   - haxelib dev json5mod $(pwd)
-#NOTE:v.2,0,1 have bug
+#NOTE:hamcrest v.2,0,1 won't build with haxe: development
   - haxelib install hamcrest
   - haxelib install munit
 #  - haxelib git hamcrest https://github.com/mikestead/hamcrest-haxe.git
 #  - haxelib git munit https://github.com/massiveinteractive/MassiveUnit.git
   - haxelib install hxcpp
   - haxelib install hxjava
-#  - haxelib install hxnodejs
+  - haxelib install hxcs
+  - haxelib install hxnodejs
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/test
 
 script:
-  - haxelib run munit test -js -browser phantomjs
+#  - haxelib run munit test -js -browser phantomjs
+  - haxelib run munit test -js
   - haxelib run munit test -java
+  - haxelib run munit test -cs
   - haxelib run munit test -cpp

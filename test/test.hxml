@@ -13,8 +13,22 @@
 -swf build/as3_test.swf
 
 ## JavaScript
+#--next
+#
+#-main TestMain
+#-lib munit
+#-lib hamcrest
+#-lib json5mod
+#-cp src
+#-cp test
+#-D haxeJSON
+#
+#-js build/js_test.js
+
+## JavaScript NodeJS
 --next
 
+-lib hxnodejs
 -main TestMain
 -lib munit
 -lib hamcrest
@@ -23,7 +37,7 @@
 -cp test
 -D haxeJSON
 
--js build/js_test.js
+-js build/nodejs_test.js
 
 ## Neko
 --next
@@ -86,11 +100,6 @@
 #--next
 #-D php7
 #-php build/php_test
-
-## JavaScript NodeJS
-#--next
-#-lib hxnodejs
-#-js build/js_test.js
 
 ## HashLink
 --next
