@@ -1,9 +1,9 @@
 package gs.json5mod;
 
-import haxe.ds.StringMap;
 import gs.json5mod.Json5Ast;
 
-@:enum private abstract StateFlags(Int)
+@:enum
+private abstract StateFlags(Int)
 {
 	var STATE_PARSE_VALUE				= 0;
 	var STATE_PARSE_ARRAY				= 1;
@@ -50,7 +50,6 @@ class Json5Parser
 		return result;
 	}
 
-/**/
 #if debug
 	function set_state_(value: StateFlags) : StateFlags
 	{
@@ -76,7 +75,6 @@ class Json5Parser
 		}
 	}
 #end
-/**/
 
 	inline function read_Char_Code(): Int
 	{
@@ -315,7 +313,7 @@ class Json5Parser
 		{
 			var cc: Int = read_Char_Code();
 			if (is_Eof(cc))
-				die_With_Msg("expected '" + Json5Util.Array2String(arr) + "'");
+				die_With_Msg('expected "${Json5Util.Array2String(arr)}"');
 			if (cc != arr[i])
 				die(cc);
 		}
@@ -353,7 +351,7 @@ class Json5Parser
 		{
 			case JObject(fields, names):
 				if (names.exists(key))
-					die_With_Msg("duplicate key '" + key + "'");
+					die_With_Msg('duplicate key "$key"');
 				var fi = new Json5Field(key, value);
 				fields.push(fi);
 				names.set(key, fi);
@@ -369,9 +367,7 @@ class Json5Parser
 		//trace("ENTER parse obj");
 		var old = state_;
 		state_ = STATE_PARSE_OBJ;
-		var fields = new Array<Json5Field>();
-		var names = new StringMap<Json5Field>();
-		var result = new Json5Ast(JObject(fields, names));
+		var result = new Json5Ast(JObject([], new Map<String, Json5Field>()));
 		do_Parse(result);
 		if (state_ != STATE_PARSE_OBJ_END)
 			die_With_Msg("expected '}'");
@@ -529,7 +525,7 @@ class Json5Parser
 	function parse_Hex(exact_limit: Int): UInt
 	{//:eat positive hex only (yet)
 		var begin = pos_ - 2;
-		var result: UInt = 0;
+		var result: Int = 0;
 		for (i in 0...8)
 		{
 			if ((exact_limit != 0) && (i == exact_limit))
@@ -560,10 +556,9 @@ class Json5Parser
 				break;//:for
 			}
 			result <<= 4;
-			result += add | 0;
+			result += add;
 		}
 		//??result >>>= 0;
-		result |= 0;//TODO fix me: how to make it really UInt?
 		return result;
 	}
 
@@ -603,7 +598,7 @@ class Json5Parser
 		case '\r'.code, '\n'.code:
 			parse_Eol(cc);
 		default:
-			die_With_Msg("bad escape sequence '\\" + String.fromCharCode(cc) + "'");
+			die_With_Msg('bad escape sequence "\\${String.fromCharCode(cc)}"');
 		}
 	}
 
@@ -615,7 +610,7 @@ class Json5Parser
 		{
 			var cc: Int = read_Char_Code();
 			if (is_Eof(cc))
-				die_With_Msg("expected '" + quote + "'");
+				die_With_Msg('expected ${String.fromCharCode(quote)}');
 			if (cc == quote)
 			{
 				if (null == buf)
@@ -724,13 +719,11 @@ class Json5Parser
 
 	function die(cc: Int)
 	{
-		throw new Json5Error("ERROR: bad char '" + String.fromCharCode(cc) + "'==0x" + StringTools.hex(cc, 2) +
-			" at line " + (row_ + 1) + ":" + col_, pos_, row_ + 1, col_);
+		throw new Json5Error('ERROR: bad char "${String.fromCharCode(cc)}"==0x${StringTools.hex(cc, 2)} at line ${row_ + 1}:${col_}', pos_, row_ + 1, col_);
 	}
 	function die_With_Msg(msg: String)
 	{
-		throw new Json5Error("ERROR: " + msg +
-			" at line " + (row_ + 1) + ":" + col_, pos_, row_ + 1, col_);
+		throw new Json5Error('ERROR: $msg at line ${row_ + 1}:${col_}', pos_, row_ + 1, col_);
 	}
 
 }

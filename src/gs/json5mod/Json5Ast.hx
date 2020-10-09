@@ -1,8 +1,14 @@
 package gs.json5mod;
 
-import haxe.ds.StringMap;
-
 //:based on https://github.com/nadako/hxjsonast
+
+/*
+	fancy @:structInit syntax instead of classic `new` operator:
+	var ast: Json5Ast =
+	{
+		value: JString("foo"),
+	}
+*/
 
 @:structInit
 class Json5Ast
@@ -14,6 +20,20 @@ class Json5Ast
 	public inline function new(value: Json5Value)
 	{
 		value_ = value;
+	}
+
+	public function to_String(): String
+	{
+		return switch (value_)
+		{
+		case JString(string):
+			string;
+		default:
+#if debug
+			trace('WARNING: bad String');
+#end
+			null;
+		}
 	}
 
 	public function to_Any(): Any
@@ -67,7 +87,7 @@ class Json5Ast
 			return s;
 		default:
 #if debug
-			trace("WARNING: bad String '" + name + "'");
+			trace('WARNING: bad String "$name"');
 #end
 			return def;
 		}
@@ -84,15 +104,15 @@ class Json5Ast
 			var f = Std.parseFloat(s);
 			var i = Std.parseInt(s);
 			if (i == f)
-				return i;
+				return Std.int(i);
 #if debug
-			trace("WARNING: bad Int (got Float) '" + name + "'");
+			trace('WARNING: bad Int (got Float) "$name"');
 #end
 
 			return def;
 		default:
 #if debug
-			trace("WARNING: bad Int '" + name + "'");
+			trace('WARNING: bad Int "$name"');
 #end
 			return def;
 		}
@@ -111,14 +131,14 @@ class Json5Ast
 			var f = Std.parseFloat(s);
 			var i = Std.parseInt(s);
 			if (i == f)
-				return i | 0;
+				return Std.int(i);
 #if debug
-			trace("WARNING: bad UInt (got Float) '" + name + "'");
+			trace('WARNING: bad UInt (got Float) "$name"');
 #end
 			return def;
 		default:
 #if debug
-			trace("WARNING: bad UInt '" + name + "'");
+			trace('WARNING: bad UInt "$name"');
 #end
 			return def;
 		}
@@ -135,7 +155,7 @@ class Json5Ast
 			return Std.parseFloat(s);
 		default:
 #if debug
-			trace("WARNING: bad Float '" + name + "'");
+			trace('WARNING: bad Float "$name"');
 #end
 			return def;
 		}
@@ -152,9 +172,43 @@ class Json5Ast
 			return b;
 		default:
 #if debug
-			trace("WARNING: bad Bool '" + name + "'");
+			trace('WARNING: bad Bool "$name"');
 #end
 			return def;
+		}
+	}
+
+	public function get_Array(name: String): Array<Json5Ast>
+	{
+		var node = get_Field(name);
+		switch (node.value_)
+		{
+		case JNull:
+			return null;
+		case JArray(values):
+			return values;
+		default:
+#if debug
+			trace('WARNING: bad Array "$name"');
+#end
+			return null;
+		}
+	}
+
+	public function get_Object(name: String): Array<Json5Field>
+	{
+		var node = get_Field(name);
+		switch (node.value_)
+		{
+		case JNull:
+			return null;
+		case JObject(fields, _):
+			return fields;
+		default:
+#if debug
+			trace('WARNING: bad Object "$name"');
+#end
+			return null;
 		}
 	}
 }
@@ -165,7 +219,7 @@ enum Json5Value
 	JHex(u: UInt);
 	JNumber(s: String);
 	JIntRange(s: String);//:json5 mod
-	JObject(fields: Array<Json5Field>, names: StringMap<Json5Field>);
+	JObject(fields: Array<Json5Field>, names: Map<String, Json5Field>);
 	JArray(values: Array<Json5Ast>);
 	JBool(b: Bool);
 	JNull;

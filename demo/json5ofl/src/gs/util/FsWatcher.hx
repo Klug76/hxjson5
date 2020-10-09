@@ -1,11 +1,8 @@
 package gs.util;
 
-import haxe.ds.StringMap;
-
 #if (air3 || sys)
 
 #if air3
-import flash.events.TimerEvent;
 import flash.filesystem.File;
 import flash.errors.Error;
 #else
@@ -89,7 +86,7 @@ class FsWatcher
 
 	var base_dir_: String = "";
 	var file_list_: Array<FileInfo> = [];
-	var file_map_: StringMap<FileInfo> = new StringMap<FileInfo>();
+	var file_map_ = new Map<String, FileInfo>();
 	var timer_: Timer = null;
 
 	public function new()

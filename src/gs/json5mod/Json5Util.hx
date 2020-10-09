@@ -32,10 +32,10 @@ class Json5Util
 
 	public static function Array2String(arr: Array<Int>): String
 	{
-		var sb: Json5Buf = new Json5Buf();
-		for (i in 0...arr.length)
+		var sb = new Json5Buf();
+		for (a in arr)
 		{
-			sb.add_Chr(arr[i]);
+			sb.add_Chr(a);
 		}
 		return sb.toString();
 	}

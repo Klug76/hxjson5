@@ -43,7 +43,7 @@ class Json5ParseTest
 '[ 123, -600, +5, 1.2, 1.2e3, 7.2e-3,  .5, 2.,  .5e2, 2.E-1,  -.4,  -.4e-2, 0, 1, -2, +3, 0e4, 0e-5, 6.7, .8, 9., .10e0, 11.12e+1, 13e0, 0.1e14, 0.0e15 ]';
 		var a: Array<Dynamic>	=
  [ 123, -600,  5, 1.2, 1.2e3, 7.2e-3, 0.5,  2, 0.5e2,  2e-1, -0.4, -0.4e-2, 0, 1, -2,  3,   0,    0, 6.7, .8, 9.,    .1,    111.2,   13, 0.1e14,      0 ];
-		var b = cast(Json5.parse(s).to_Any(), Array<Dynamic>);
+		var b: Array<Dynamic> = Json5.parse(s).to_Any();
 		Assert.areEqual(a.length, b.length);
 		for (i in 0...a.length)
 		{
@@ -95,6 +95,8 @@ class Json5ParseTest
 			var v: UInt = y[i] | 0;
 			Assert.areEqual(u, v);
 		}
+		//var t = Json5.parse("0xDEadBEaf").to_Any();
+		//Assert.areEqual(0xDEadBEaf, t);
 	}
 	/**/
 

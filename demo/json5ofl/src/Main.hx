@@ -129,7 +129,7 @@ class Main extends Sprite
 			ident: '\t',
 			tracer: my_Trace
 		};
-		Json5.printer_Factory().print(j, opt);
+		Json5.print(j, opt);
 	}
 
 	function my_Trace(lines: String)

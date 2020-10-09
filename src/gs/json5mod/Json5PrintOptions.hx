@@ -12,6 +12,7 @@ typedef Json5PrintOptions =
 	?ident: String,
 	?space_before_colon: String,
 	?space_after_colon: String,
+	?float_suffix: String,
 	?width_limit: Int,//:broken yet
 	flags: Json5PrintFlags
 }

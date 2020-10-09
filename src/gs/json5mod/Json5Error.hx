@@ -2,7 +2,11 @@ package gs.json5mod;
 
 class Json5Error
 #if js
+#if haxe4
+	extends js.lib.Error
+#else
 	extends js.Error
+#end
 #elseif flash
 	extends flash.errors.Error
 #end

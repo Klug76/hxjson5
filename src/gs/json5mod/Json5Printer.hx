@@ -1,6 +1,7 @@
 package gs.json5mod;
 
 import gs.json5mod.Json5Ast;
+
 using gs.json5mod.Json5PrintFlags;
 using gs.json5mod.Json5PrintOptions;
 
@@ -47,6 +48,7 @@ class Json5Printer
 	var ident_: String;
 	var space_before_colon_: String;
 	var space_after_colon_: String;
+	var float_suffix_: String;
 	var tracer_: Json5PrintCallback;
 	var width_limit_: Int;
 	//?inline_array_limit
@@ -68,7 +70,8 @@ class Json5Printer
 	{
 		ident_ =
 			space_before_colon_ =
-			space_after_colon_ = "";
+			space_after_colon_ =
+			float_suffix_ = "";
 		tracer_ = null;
 		width_limit_ = 128;
 		print_flags_ = Compact;
@@ -82,6 +85,8 @@ class Json5Printer
 				space_before_colon_ = options.space_before_colon;
 			if (options.space_after_colon != null)
 				space_after_colon_ = options.space_after_colon;
+			if (options.float_suffix != null)
+				float_suffix_ = options.float_suffix;
 			if (options.width_limit != null)
 				width_limit_ = options.width_limit;
 			print_flags_ = options.flags;
@@ -158,22 +163,22 @@ class Json5Printer
 	{
 		switch (node.value_)
 		{
-			case JNull:
-				push(NODE_VALUE, "null");
-			case JString(s):
-				print_String(s);
-			case JBool(bool):
-				print_Bool(bool);
-			case JNumber(s):
-				push(NODE_VALUE, s);
-			case JHex(u):
-				print_UInt(u);
-			case JIntRange(s):
-				push(NODE_VALUE, s);
-			case JObject(fields, _):
-				print_Ast_Fields(fields);
-			case JArray(values):
-				print_Ast_Array(values);
+		case JNull:
+			push(NODE_VALUE, "null");
+		case JString(s):
+			print_String(s);
+		case JBool(bool):
+			print_Bool(bool);
+		case JNumber(s):
+			push(NODE_VALUE, s);
+		case JHex(u):
+			print_UInt(u);
+		case JIntRange(s):
+			push(NODE_VALUE, s);
+		case JObject(fields, _):
+			print_Ast_Fields(fields);
+		case JArray(values):
+			print_Ast_Array(values);
 		}
 	}
 
@@ -218,7 +223,7 @@ class Json5Printer
 		if (ref_.indexOf(v) >= 0)
 		{
 #if debug
-			trace("WARNING: circular reference detected in '" + name + "'");
+			trace('WARNING: circular reference detected in "$name"');
 #end
 			return;
 		}
@@ -323,12 +328,14 @@ class Json5Printer
 
 	inline function print_UInt(u: UInt): Void
 	{
-		push(NODE_VALUE, "0x" + StringTools.hex(u));
+		push(NODE_VALUE, '0x${StringTools.hex(u, 8)}');
 	}
 
 	inline function print_Float(v: Float): Void
 	{
-		push(NODE_VALUE, if (Math.isFinite(v)) Std.string(v) else "null");
+		var temp = if (Math.isFinite(v)) Std.string(v) else "null";
+		temp += float_suffix_;
+		push(NODE_VALUE, temp);
 	}
 
 	inline function print_Bool(v: Bool): Void
