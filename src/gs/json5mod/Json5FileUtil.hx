@@ -45,11 +45,9 @@ class Json5FileUtil
 		{
 			Context.warning(path + " does not exist", Context.currentPos());
 		}
-		var content = sys.io.File.getContent(path);
 		try
 		{
-			var j = Json5.parse(content).to_Any();//:it will throw an error when you made a mistake.
-
+			var j = Json5.parse(sys.io.File.getContent(path)).to_Any();//:it will throw an error when you made a mistake.
 			var e = Context.makeExpr(j, Context.currentPos());//:As such, only basic types and enums are supported
 			return check_Type_Of_Arrays(e);
 		}
