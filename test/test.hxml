@@ -36,7 +36,7 @@
 -cp src
 -cp test
 -D haxeJSON
--dce full
+#-dce full
 
 -js build/nodejs_test.js
 
