@@ -7,6 +7,7 @@ import gs.json5mod.Json5PrintFlags;
 import haxe.Json;
 import massive.munit.Assert;
 
+@:keep
 class Json5PrintTest
 {
 	public function new()

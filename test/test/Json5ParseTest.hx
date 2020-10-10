@@ -11,6 +11,7 @@ import haxe.Json;
 import haxe.crypto.Base64;
 import massive.munit.Assert;
 
+@:keep
 class Json5ParseTest
 {
 	public function new()
