@@ -28,22 +28,28 @@ class Json5Visitor
 		var result = callback_(key, ast);
 		if (result == ast)
 		{//:do default recursive processing
-			switch(ast.value_)
+			switch(ast)
 			{
-			case JArray(v):
+			case JArray(arr):
 				var values = new Array<Json5Ast>();
-				for (val in v)
+				for (val in arr)
 				{
 					values.push(process('$key[]', val));
 				}
-				result = new Json5Ast(JArray(values));
-			case JObject(f, n):
+				result = JArray(values);
+			case JObject(arr, _):
 				var obj = new Json5Obj();
-				for (field in f)
+				for (fi in arr)
 				{
-					obj.add_Field(new Json5Field(field.name_, process(field.name_, field.value_)));
+					switch (fi)
+					{
+					case JObjectField(key, val):
+						obj.add(key, process(key, val));
+					default:
+						//:NOP
+					}
 				}
-				result = new Json5Ast(obj);
+				result = obj;
 			default:
 			}
 		}

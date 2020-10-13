@@ -30,15 +30,15 @@ class SpriteDescriptor
 
 class Main extends Sprite
 {
-#if (air3 || sys)//#if live_reload!?
+#if (air || sys)//#if live_reload!?
 	var mon_: FsWatcher = new FsWatcher();
 	var hot_: LiveJson = new LiveJson();
 #end
 
 	//var user_: User = new User();
 	var user_: User = {uid: 0, name: "", money: 0};
-	var circle_: Sprite = new Sprite();
-	var triangle_: Sprite = new Sprite();
+	var circle_ = new Sprite();
+	var triangle_ = new Sprite();
 
 	public function new()
 	{
@@ -70,9 +70,9 @@ class Main extends Sprite
 
 	function init()
 	{
-		trace("user=" + Json5.stringify(user_));
+		trace('user = ${Json5.stringify(user_)}');
 		CompileTimeJson.assign(user_, User, "root");
-		trace("user=" + Json5.stringify(user_));
+		trace('user = ${Json5.stringify(user_)}');
 
 		CompileTimeJson.assign(circle_, SpriteDescriptor, "circle");
 		CompileTimeJson.assign(triangle_, SpriteDescriptor, "triangle");
@@ -86,7 +86,7 @@ class Main extends Sprite
 		hot_.add_Object(sprite_, SpriteDescriptor);
 		hot_.add_Object(triangle_);
 		*/
-#if (air3 || sys)//TODO && debug? (&& live_reload?)
+#if (air || sys)//TODO && debug? (&& live_reload?)
 		mon_.set_Base_Dir("../../../");//:lime/bin/%target%/bin/ => lime/
 		mon_.signal_changed_.add(on_Json_Changed);
 
@@ -101,17 +101,17 @@ class Main extends Sprite
 #end
 	}
 
-#if (air3 || sys)
+#if (air || sys)
 	//:can be moved into LiveJson
 	function on_Json_Changed(key: String, fpath: String)
 	{
-		trace("json5 '" + key + "' changed!");
+		trace('json5 "$key" changed!');
 		hot_.refresh(fpath);
 		switch(key)
 		{
 		case "user":
 			hot_.assign(user_, User, "root");
-			trace("user=" + Json5.stringify(user_));
+			trace('user = ${Json5.stringify(user_)}');
 		case "ui":
 			hot_.assign(circle_, SpriteDescriptor, "circle");
 			hot_.assign(triangle_, SpriteDescriptor, "triangle");

@@ -1,6 +1,7 @@
 package;
 
 import gs.json5mod.Json5Ast;
+import gs.json5mod.Json5Access;
 import gs.json5mod.Json5FileUtil;
 
 #if macro
@@ -12,7 +13,7 @@ using haxe.macro.Tools;
 
 class LiveJson
 {
-	public var cur_ast_: Json5Ast = Json5Ast.NULL_NODE;
+	public var cur_ast_: Json5Access = JNull;
 
 #if !macro
 
@@ -21,7 +22,7 @@ class LiveJson
 
 	public function refresh(fpath: String): Void
 	{
-		var json_ast: Json5Ast = Json5Ast.NULL_NODE;
+		var json_ast: Json5Ast = JNull;
 		try
 		{
 			json_ast = Json5FileUtil.load(fpath);
@@ -29,10 +30,9 @@ class LiveJson
 		catch (err: Dynamic)
 		{
 			trace(err);
-			trace("file: '" + fpath + "'");
+			trace('file: "$fpath"');
 		}
 		cur_ast_ = json_ast;
-		//trace("********** refresh " + fpath);
 	}
 
 #end
@@ -89,7 +89,7 @@ class LiveJson
 					}
 				default:
 				}
-				trace("WARNING: unsupported field " + f.name + ": " + f.type);
+				trace('WARNING: unsupported field ${f.name}: ${f.type}');
 			}
 			return code;
 		}

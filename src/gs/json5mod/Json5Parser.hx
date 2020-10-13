@@ -17,20 +17,29 @@ private abstract StateFlags(Int)
 	var STATE_PARSE_TAIL				= 9;
 }
 
+@:enum
+private abstract InternalFlags(Int) from Int to Int
+{
+	var FLAG_DEFAULT	= 0x0000;
+	var FLAG_SPACE		= 0x0001;
+	var FLAG_COMMA		= 0x0002;
+}
+
 class Json5Parser
 {
 	var js_: String;
+	var parse_flags_: Json5ParseFlags;
 	var pos_: Int;
 	var row_: Int;
 	var col_: Int;
-	var flags_: Int;
+	var delimiter_flags_: InternalFlags;
 	var state_: StateFlags = STATE_PARSE_VALUE;
 	//var state_(default, set): StateFlags = STATE_PARSE_VALUE;
 
-	static inline var FLAG_SPACE = 0x0001;
-	static inline var FLAG_COMMA = 0x0002;
-
-	public function new() {}
+	public function new(flags: Json5ParseFlags)
+	{
+		parse_flags_ = flags;
+	}
 
 	public function parse(js: String) : Json5Ast
 	{
@@ -40,13 +49,13 @@ class Json5Parser
 		pos_ = 0;
 		row_ = 0;
 		col_ = 0;
-		flags_ = 0;
+		delimiter_flags_ = 0;
 		state_ = STATE_PARSE_VALUE;
 		//trace("'{.code'==0x" + StringTools.hex('{'.code, 2));
 		//trace("js[0]='" + js.substr(0, 1) + "', code==0x" + StringTools.hex(cur_Char_Code(), 2));
-		var result = do_Parse(Json5Ast.NULL_NODE);
+		var result = do_Parse();
 		state_ = STATE_PARSE_TAIL;
-		do_Parse(Json5Ast.NULL_NODE);//:eat trailing whitespace, comments, commas
+		do_Parse();//:eat trailing whitespace, comments, commas
 		return result;
 	}
 
@@ -98,22 +107,22 @@ class Json5Parser
 		--col_;
 	}
 
-	function do_Parse(parent: Json5Ast): Json5Ast
+	function do_Parse(): Json5Ast
 	{
 		while (true)
 		{
-			var cc: Int = read_Char_Code();
+			var cc = read_Char_Code();
 			if (is_Eof(cc))
-				return Json5Ast.NULL_NODE;
+				return JNull;
 			//trace("do_Parse, cc='" + String.fromCharCode(cc) + "'==0x" + StringTools.hex(cc));
 			switch(cc)
 			{
 			case ' '.code, '\t'.code, 0xA0/*Non-breaking space*/:
 				//TODO may be if \t col_ += TAB_SIZE - 1?
-				flags_ |= FLAG_SPACE;
+				delimiter_flags_ |= FLAG_SPACE;
 			case '\r'.code, '\n'.code:
 				parse_Eol(cc);
-				flags_ |= FLAG_SPACE;
+				delimiter_flags_ |= FLAG_SPACE;
 			case '{'.code:
 				switch(state_)
 				{
@@ -134,7 +143,7 @@ class Json5Parser
 				default:
 					die(cc);
 				}
-				return Json5Ast.NULL_NODE;//:----------------------------
+				return JNull;//:----------------------------
 			case '['.code:
 				switch(state_)
 				{
@@ -154,13 +163,13 @@ class Json5Parser
 				default:
 					die(cc);
 				}
-				return Json5Ast.NULL_NODE;//:----------------------------
+				return JNull;//:----------------------------
 			case ':'.code:
 				if (STATE_PARSE_COLON != state_)
 					die(cc);
-				return Json5Ast.NULL_NODE;//:----------------------------
+				return JNull;//:----------------------------
 			case ','.code:
-				if ((flags_ & FLAG_COMMA) != 0)
+				if ((delimiter_flags_ & FLAG_COMMA) != 0)
 					die(cc);
 				switch(state_)
 				{
@@ -173,7 +182,7 @@ class Json5Parser
 				default:
 					die(cc);
 				}
-				flags_ |= FLAG_COMMA;
+				delimiter_flags_ |= FLAG_COMMA;
 			case '#'.code:
 				parse_Line_Comment();
 			case '/'.code:
@@ -193,10 +202,10 @@ class Json5Parser
 				switch(state_)
 				{
 				case STATE_PARSE_VALUE, STATE_PARSE_ARRAY:
-					return new Json5Ast(JString(parse_ML_String()));//:----------------------------
-				case STATE_PARSE_ARRAY_DELIMITER if (flags_ != 0):
+					return JString(parse_ML_String());//:----------------------------
+				case STATE_PARSE_ARRAY_DELIMITER if (delimiter_flags_ != 0)://:disallow [```a``````b```]
 					state_ = STATE_PARSE_ARRAY;
-					return new Json5Ast(JString(parse_ML_String()));//:----------------------------
+					return JString(parse_ML_String());//:----------------------------
 				default:
 					die(cc);
 				}
@@ -205,12 +214,12 @@ class Json5Parser
 				{
 				case STATE_PARSE_OBJ, STATE_PARSE_OBJ_DELIMITER:
 					var key = parse_String(cc);//:sort of parse_Key()
-					parse_Value(key, parent);
+					return parse_Field(key);
 				case STATE_PARSE_VALUE, STATE_PARSE_ARRAY:
-					return new Json5Ast(JString(parse_String(cc)));//:----------------------------
-				case STATE_PARSE_ARRAY_DELIMITER if (flags_ != 0):
+					return JString(parse_String(cc));//:----------------------------
+				case STATE_PARSE_ARRAY_DELIMITER if (delimiter_flags_ != 0)://:disallow ["a""b"]
 					state_ = STATE_PARSE_ARRAY;
-					return new Json5Ast(JString(parse_String(cc)));//:----------------------------
+					return JString(parse_String(cc));//:----------------------------
 				default:
 					die(cc);
 				}
@@ -219,11 +228,11 @@ class Json5Parser
 				{
 				case STATE_PARSE_OBJ, STATE_PARSE_OBJ_DELIMITER:
 					var key = parse_Key(cc);
-					parse_Value(key, parent);
+					return parse_Field(key);
 				case STATE_PARSE_VALUE, STATE_PARSE_ARRAY, STATE_PARSE_ARRAY_DELIMITER:
 					if (STATE_PARSE_ARRAY_DELIMITER == state_)
 					{
-						if (flags_ != 0)
+						if (delimiter_flags_ != 0)
 							state_ = STATE_PARSE_ARRAY;
 						else
 							die(cc);
@@ -232,17 +241,17 @@ class Json5Parser
 					{
 					case 'n'.code:
 						parse_String_Literal(['n'.code, 'u'.code, 'l'.code, 'l'.code]);
-						return Json5Ast.NULL_NODE;//:----------------------------
+						return JNull;//:----------------------------
 					case 'N'.code:
 						parse_String_Literal(['N'.code, 'a'.code, 'N'.code]);
 						//:explicit NaN not exist in some targets
-						return Json5Ast.NULL_NODE;//:----------------------------
+						return JNull;//:----------------------------
 					case 'f'.code:
 						parse_String_Literal(['f'.code, 'a'.code, 'l'.code, 's'.code, 'e'.code]);
-						return new Json5Ast(JBool(false));//:----------------------------
+						return JBool(false);//:----------------------------
 					case 't'.code:
 						parse_String_Literal(['t'.code, 'r'.code, 'u'.code, 'e'.code]);
-						return new Json5Ast(JBool(true));//:----------------------------
+						return JBool(true);//:----------------------------
 					}
 					go_Back();
 					return parse_Number();//:----------------------------
@@ -267,10 +276,10 @@ class Json5Parser
 
 	function parse_Line_Comment()
 	{
-		flags_ |= FLAG_SPACE;
+		delimiter_flags_ |= FLAG_SPACE;
 		while (true)
 		{
-			var cc: Int = read_Char_Code();
+			var cc = read_Char_Code();
 			if (is_Eof(cc))
 				break;
 			switch(cc)
@@ -286,10 +295,10 @@ class Json5Parser
 
 	function parse_Block_Comment()
 	{
-		flags_ |= FLAG_SPACE;
+		delimiter_flags_ |= FLAG_SPACE;
 		while (true)
 		{
-			var cc: Int = read_Char_Code();
+			var cc = read_Char_Code();
 			if (is_Eof(cc))
 				break;
 			switch(cc)
@@ -311,7 +320,7 @@ class Json5Parser
 	{
 		for (i in 1...arr.length)
 		{
-			var cc: Int = read_Char_Code();
+			var cc = read_Char_Code();
 			if (is_Eof(cc))
 				die_With_Msg('expected "${Json5Util.Array2String(arr)}"');
 			if (cc != arr[i])
@@ -328,10 +337,10 @@ class Json5Parser
 		var begin = pos_ - 1;//:eat cc too
 		while (true)
 		{
-			var cc: Int = read_Char_Code();
+			var cc = read_Char_Code();
 			if (is_Eof(cc))
 			{
-				die_With_Msg("expected field name");
+				die_With_Msg("expected key name");
 			}
 			if (!Json5Util.is_Valid_Key_Char(cc, false))
 			{
@@ -341,25 +350,19 @@ class Json5Parser
 		}
 	}
 
-	function parse_Value(key: String, parent: Json5Ast): Void
+	function parse_Field(key: String): Json5Ast
 	{
-		state_ = STATE_PARSE_COLON;
-		do_Parse(Json5Ast.NULL_NODE);
-		state_ = STATE_PARSE_VALUE;
-		var value: Json5Ast = do_Parse(Json5Ast.NULL_NODE);
-		switch (parent.value_)
+		if (!parse_flags_.has(Json5ParseFlags.AllowEmptyKeys))
 		{
-			case JObject(fields, names):
-				if (names.exists(key))
-					die_With_Msg('duplicate key "$key"');
-				var fi = new Json5Field(key, value);
-				fields.push(fi);
-				names.set(key, fi);
-			default:
-				die_With_Msg("bad parent node");
+			if (key.length <= 0)
+				die_With_Msg("expected non-empty key name");
 		}
-		state_ = STATE_PARSE_OBJ_DELIMITER;
-		flags_ = 0;
+		state_ = STATE_PARSE_COLON;
+		do_Parse();//:eat comments etc
+		state_ = STATE_PARSE_VALUE;
+		var result = JObjectField(key, do_Parse());
+		state_ = STATE_PARSE_OBJ;
+		return result;
 	}
 
 	function parse_Object(): Json5Ast
@@ -367,8 +370,32 @@ class Json5Parser
 		//trace("ENTER parse obj");
 		var old = state_;
 		state_ = STATE_PARSE_OBJ;
-		var result = new Json5Ast(JObject([], new Map<String, Json5Field>()));
-		do_Parse(result);
+		var arr = [];
+		var map = new Map<String, Json5Ast>();//:NOTE: Map can be slow in js
+		//var map = new js.StringMap<Json5Ast>();
+		var result = JObject(arr, map);
+		while (true)
+		{
+			var fi = do_Parse();
+			if (state_ != STATE_PARSE_OBJ)
+				break;
+			//trace("	push " + Std.string(fi));
+			switch (fi)
+			{
+			case JObjectField(key, value):
+				if (!parse_flags_.has(Json5ParseFlags.AllowDuplicateKeys))
+				{
+					if (map.exists(key))
+						die_With_Msg('duplicate key "$key"');
+				}
+				arr.push(fi);
+				map.set(key, fi);//:how to handle dups? need 4 multi-map?
+			default:
+				die_With_Msg('expected "key: value"');
+			}
+			state_ = STATE_PARSE_OBJ_DELIMITER;
+			delimiter_flags_ = 0;
+		}
 		if (state_ != STATE_PARSE_OBJ_END)
 			die_With_Msg("expected '}'");
 		state_ = old;
@@ -382,16 +409,16 @@ class Json5Parser
 		state_ = STATE_PARSE_ARRAY;
 		var arr = [];
 		//trace("ENTER parse array");
-		var result = new Json5Ast(JArray(arr));
+		var result = JArray(arr);
 		while (true)
 		{
-			var value = do_Parse(result);
+			var value = do_Parse();
 			if (state_ != STATE_PARSE_ARRAY)
 				break;
 			//trace("	push " + Std.string(result));
 			arr.push(value);
 			state_ = STATE_PARSE_ARRAY_DELIMITER;
-			flags_ = 0;
+			delimiter_flags_ = 0;
 		}
 		if (state_ != STATE_PARSE_ARRAY_END)
 			die_With_Msg("expected ']'");
@@ -449,7 +476,7 @@ class Json5Parser
 				{
 					if ((flags & (I_DIGIT | F_DIGIT)) == I_DIGIT)
 					{//:json5+ extension: Int range [a..b]
-						return new Json5Ast(JIntRange(parse_Range(begin)));
+						return JIntRange(parse_Range(begin));
 					}
 					die(cc);
 				}
@@ -462,7 +489,7 @@ class Json5Parser
 				break;//:while
 			case 'x'.code, 'X'.code:
 				if ((flags & (SIGN | LEAD0 | DOT | F_DIGIT)) == LEAD0)
-					return new Json5Ast(JHex(parse_Hex(0)));
+					return JHex(parse_Hex(0));
 				die(cc);
 			default:
 				go_Back();
@@ -472,7 +499,7 @@ class Json5Parser
 		if ((flags & (I_DIGIT | F_DIGIT)) == 0)
 			die_With_Msg("expected number");
 		var sub: String = js_.substring(begin, pos_);
-		return new Json5Ast(JNumber(sub));
+		return JNumber(sub);
 	}
 
 	function parse_Int(parse_exponent: Bool): Void
@@ -530,7 +557,7 @@ class Json5Parser
 		{
 			if ((exact_limit != 0) && (i == exact_limit))
 				break;
-			var cc: Int = read_Char_Code();
+			var cc = read_Char_Code();
 			if (is_Eof(cc))
 			{
 				if (exact_limit != 0)
@@ -608,7 +635,7 @@ class Json5Parser
 		var buf: Json5Buf = null;
 		while (true)
 		{
-			var cc: Int = read_Char_Code();
+			var cc = read_Char_Code();
 			if (is_Eof(cc))
 				die_With_Msg('expected ${String.fromCharCode(quote)}');
 			if (cc == quote)

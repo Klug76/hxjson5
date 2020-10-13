@@ -1,8 +1,8 @@
 package gs.util;
 
-#if (air3 || sys)
+#if (air || sys)
 
-#if air3
+#if air
 import flash.filesystem.File;
 import flash.errors.Error;
 #else
@@ -33,7 +33,7 @@ private class FileInfo
 	public var filepath_: String;
 	public var exists_: Bool = false;
 	public var last_modified_time_: Float = 0;
-#if air3
+#if air
 	public var file_: File;
 #end
 
@@ -45,7 +45,7 @@ private class FileInfo
 			filepath_ = basedir + fname;
 		else
 			filepath_ = fname;
-#if air3
+#if air
 		file_ = new File(filepath_);
 #end
 		update();
@@ -53,7 +53,7 @@ private class FileInfo
 
 	public function update()
 	{
-#if air3
+#if air
 		exists_ = file_.exists;
 #else
 		exists_ = FileSystem.exists(filepath_);
@@ -61,7 +61,7 @@ private class FileInfo
 //trace("*********** " + key_ + " exists=" + exists_);
 		if (!exists_)
 			return;
-#if air3
+#if air
 		try
 		{
 			last_modified_time_ = file_.modificationDate.getTime();
@@ -100,7 +100,7 @@ class FsWatcher
 		}
 		else if (PathUtil.path_Is_Relative(fpath))
 		{
-#if air3
+#if air
 			base_dir_ = "file:///" + File.applicationDirectory.nativePath;
 #else
 			var pr = Sys.programPath();

@@ -2,6 +2,7 @@ package;
 
 import gs.json5mod.Json5;
 import gs.json5mod.Json5Ast;
+import gs.json5mod.Json5Access;
 
 #if macro
 import sys.io.File;
@@ -22,7 +23,7 @@ class CompileTimeJson
 #if display
 		return macro {};
 #else
-		function gen_Code(target: Expr, fields: Array<ClassField>, jnode: Json5Ast)
+		function gen_Code(target: Expr, fields: Array<ClassField>, jnode: Json5Access)
 		{
 			var code = [];
 			inline function assembly(e: Expr)
@@ -70,11 +71,10 @@ class CompileTimeJson
 						assembly(macro { $target.$field = $v{val}; } );
 						continue;
 					//default:
-						//trace("********* " + f);
 					}
 				default:
 				}
-				trace("WARNING: unsupported field " + f.name + ": " + f.type);
+				trace('WARNING: unsupported field ${f.name}: ${f.type}');
 			}
 			return code;
 		}
@@ -88,11 +88,11 @@ class CompileTimeJson
 		if (null == fields)
 			Context.fatalError("fields not found", Context.currentPos());
 
-		var json_ast: Json5Ast = cache.get(jfile);
+		var json_ast: Json5Access = cache.get(jfile);
 		if (null == json_ast)
 		{
 			var content = File.getContent(jfile);
-			json_ast = Json5.parser_Factory().parse(content);
+			json_ast = Json5.parse(content);
 			cache.set(jfile, json_ast);
 			//trace("***** json loaded at compile time " + filepath);
 		}

@@ -56,7 +56,7 @@ class Json5Printer
 	var print_flags_: Json5PrintFlags;
 	var flags__: InternalFlags;
 	var buf__: Json5Buf;
-	var aux_buf_: Json5Buf;
+	var aux_buf_: Json5Buf = null;
 	var row__: Int;
 	var ref_: Array<Dynamic>;
 	var node_: Array<TextNode>;
@@ -135,15 +135,12 @@ class Json5Printer
 			if ((c == Array) || (c == List))
 				print_Iterable(key, v);
 			else
+				print_Class(key, v);
+		case TEnum(c):
 			if (c == Json5Ast)
 				print_Ast(v);
-			//else
-			//if (c == haxe.ds.StringMap)
-				//print_Map(v);
 			else
-				print_Class(key, v);
-		case TEnum(_):
-			print_Enum(v);
+				print_Enum(v);
 		case TInt:
 			print_Int(v);
 		case TFloat:
@@ -161,7 +158,7 @@ class Json5Printer
 
 	function print_Ast(node: Json5Ast): Void
 	{
-		switch (node.value_)
+		switch (node)
 		{
 		case JNull:
 			push(NODE_VALUE, "null");
@@ -177,6 +174,8 @@ class Json5Printer
 			push(NODE_VALUE, s);
 		case JObject(fields, _):
 			print_Ast_Fields(fields);
+		case JObjectField(_, _):
+			//:NOP
 		case JArray(values):
 			print_Ast_Array(values);
 		}
@@ -195,7 +194,7 @@ class Json5Printer
 
 	function get_Object_Fields(v: Dynamic): Array<String>
 	{
-		//TODO how to filter? rtti is sux
+		//TODO how to filter?
 		return Reflect.fields(v);
 	}
 
@@ -207,7 +206,7 @@ class Json5Printer
 
 	function get_Class_Fields(v: Dynamic): Array<String>
 	{
-		//TODO how to filter? rtti is sux
+		//TODO how to filter?
 		return Type.getInstanceFields(Type.getClass(v));
 	}
 
@@ -256,28 +255,33 @@ class Json5Printer
 		ref_.pop();
 	}
 
-	function print_Ast_Fields(field: Array<Json5Field>) : Void
+	function print_Ast_Fields(field: Array<Json5Ast>) : Void
 	{
 		//:prepare
 		var len: Int = field.length;
 		if ((len > 1) && print_flags_.has(SortFields))
 		{
 			field = field.copy();
-			field.sort(sort_Ast_Ascending);
+			field.sort(sort_Fields_Ascending);
 			//trace(field.join(":"));
 		}
 		//:print
 		push(NODE_OBJ_BEGIN);
 		for (i in 0...len)
 		{
-			var f: Json5Field = field[i];
+			var fi = field[i];
 			if (i > 0)
 			{
 				push(NODE_DELIMITER);
 			}
-			print_Key(f.name_);
-			push(NODE_COLON);
-			print_Ast(f.value_);
+			switch (fi)
+			{
+			case JObjectField(key, value):
+				print_Key(key);
+				push(NODE_COLON);
+				print_Ast(value);
+			default:
+			}
 		}
 		push(NODE_OBJ_END);
 	}
@@ -759,12 +763,18 @@ class Json5Printer
 			return 1;
 	}
 
-	static function sort_Ast_Ascending(a: Json5Field, b: Json5Field): Int
+	static function sort_Fields_Ascending(a: Json5Ast, b: Json5Ast): Int
 	{//:assume a != b
-		if (a.name_.toLowerCase() < b.name_.toLowerCase())
-			return -1;
-		else
-			return 1;
+		switch [a, b]
+		{
+		case [JObjectField(aname, _), JObjectField(bname, _)]:
+			if (aname.toLowerCase() < bname.toLowerCase())
+				return -1;
+			else
+				return 1;
+		default://:unexpected
+				return 0;
+		}
 	}
 
 }

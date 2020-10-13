@@ -1,6 +1,5 @@
 package gs.json5mod;
 
-
 #if macro
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -11,20 +10,34 @@ class Json5FileUtil
 	public static function load(fpath: String): Json5Ast
 	{
 		var content = get_Content(fpath);
-		return Json5.parser_Factory().parse(content);
+		return Json5.parse(content);
 	}
 
 	public static function get_Content(path: String): String
 	{
-#if sys
+#if (sys || nodejs)
 		if (!sys.FileSystem.exists(path))
+		{
+#if debug
+			trace('WARNING: "$path" does not exist');
+#end
 			return null;
+		}
 		var content = sys.io.File.getContent(path);
 		return content;
-#elseif air3
-		var file: flash.filesystem.File = new flash.filesystem.File(path);
+#elseif air
+		var fp = path;
+		if ((path.indexOf(":/") < 0) && (path.indexOf("/") != 0))//:isRelative
+			fp = 'file:///${flash.filesystem.File.applicationDirectory.nativePath}/$path';
+		var file = new flash.filesystem.File(fp);
+		//trace(file.nativePath);
 		if (!file.exists)
+		{
+#if debug
+			trace('WARNING: "$path" does not exist');
+#end
 			return null;
+		}
 		var fs = new flash.filesystem.FileStream();
 		fs.open(file, flash.filesystem.FileMode.READ);
 		var fsize = fs.bytesAvailable;
@@ -34,7 +47,7 @@ class Json5FileUtil
 		fs.close();
 		return content;
 #else
-		throw "unsupported target";
+		throw "Json5FileUtil: unsupported target";
 #end
 	}
 
@@ -43,7 +56,7 @@ class Json5FileUtil
 		//:based on https://code.haxe.org/category/macros/validate-json.html
 		if (!sys.FileSystem.exists(path))
 		{
-			Context.warning(path + " does not exist", Context.currentPos());
+			Context.warning('"$path" does not exist', Context.currentPos());
 		}
 		try
 		{
@@ -56,14 +69,13 @@ class Json5FileUtil
 			var position = err.offset;
 			if (position > 0)
 				--position;
-			trace("*** pos=" + position);
 			var pos = Context.makePosition(
 			{
 				min: position,
 				max: position + 1,
 				file: path
 			});
-			Context.error(path + " is not valid Json5. " + err.msg, pos);
+			Context.error('"$path" is not valid Json5. ${err.msg}', pos);
 		}
 		return macro null;
 	}
